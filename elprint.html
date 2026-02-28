@@ -73,12 +73,12 @@
       <canvas id="canvas"> 你的浏览器不支持 canvas，请升级你的浏览器。 </canvas>
 
       <div id="toolbar">
-        <!-- <canvas id="color-selector">
-                你的浏览器不支持 canvas，请升级你的浏览器。
-            </canvas> -->
-        <div id="color-selector">
+        <canvas id="color-selector">
+          你的浏览器不支持 canvas，请升级你的浏览器。
+        </canvas>
+        <!-- <div id="color-selector">
           <div class="color-ring"></div>
-        </div>
+        </div> -->
 
         <canvas id="print-tool-selector">
           你的浏览器不支持 canvas，请升级你的浏览器。
@@ -164,68 +164,72 @@
         ctx.stroke();
       }
 
-      // function initColorSelectorSize() {
-      //     // 获取父容器的实际尺寸
-      //     const parentWidth = colorSelector.parentElement.clientWidth;
-      //     const parentHeight = colorSelector.parentElement.clientHeight;
+      function initColorSelectorSize() {
+        // 获取父容器的实际尺寸
+        const parentWidth = colorSelector.parentElement.clientWidth;
+        const parentHeight = colorSelector.parentElement.clientHeight;
 
-      //     // 设置 canvas 的实际分辨率
-      //     colorSelector.width = parentWidth;
-      //     colorSelector.height = parentHeight * 0.4;
-      // }
+        // 设置 canvas 的实际分辨率
+        colorSelector.width = parentWidth;
+        colorSelector.height = parentHeight * 0.4;
+      }
 
-      // function drawAngularGradientRing(ctx, centerX, centerY, innerRadius, outerRadius, segments = (128 * 3)) {
-      //     const angleStep = (Math.PI * 2) / segments; // 每个小扇形的角度
-      //     let r = 255
-      //     let g = 0
-      //     let b = 0
-      //     for (let i = 0; i < segments; i++) {
-      //         const startAngle = i * angleStep;
-      //         const endAngle = (i + 1) * angleStep;
+      function drawAngularGradientRing(
+        ctx,
+        centerX,
+        centerY,
+        innerRadius,
+        outerRadius,
+        segments = 128 * 3,
+      ) {
+        const angleStep = (Math.PI * 2) / segments; // 每个小扇形的角度
+        let r = 255;
+        let g = 0;
+        let b = 0;
+        for (let i = 0; i < segments; i++) {
+          const startAngle = i * angleStep;
+          const endAngle = (i + 1) * angleStep;
 
-      //         if (i < 64) {
-      //             g+=4; // 渐变成rgb(255, 255, 0)
-      //         }
-      //         else if (i < 128) {
-      //             r-=4; // 渐变成rgb(0, 255, 0)
-      //         }
-      //         else if (i < 192) {
-      //             b+=4; // 渐变成rgb(0, 255, 255)
-      //         }
-      //         else if (i < 256) {
-      //             g-=4; // 渐变成rgb(0, 0, 255)
-      //         }
-      //         else if (i < 320) {
-      //             r+=4; // 渐变成rgb(255, 0, 255)
-      //         }
-      //         else if (i < 384) {
-      //             b-=2; // 渐变成rgb(255, 0, 0)
-      //         }
+          if (i < 64) {
+            g += 4; // 渐变成rgb(255, 255, 0)
+          } else if (i < 128) {
+            r -= 4; // 渐变成rgb(0, 255, 0)
+          } else if (i < 192) {
+            b += 4; // 渐变成rgb(0, 255, 255)
+          } else if (i < 256) {
+            g -= 4; // 渐变成rgb(0, 0, 255)
+          } else if (i < 320) {
+            r += 4; // 渐变成rgb(255, 0, 255)
+          } else if (i < 384) {
+            b -= 2; // 渐变成rgb(255, 0, 0)
+          }
 
-      //         const color = `rgb(${r}, ${g}, ${b})`;
-      //         // 绘制外圆弧
-      //         ctx.beginPath();
-      //         ctx.arc(centerX, centerY, outerRadius, startAngle, endAngle);
-      //         ctx.arc(centerX, centerY, innerRadius, endAngle, startAngle, true); // 内圆弧（逆时针）
-      //         ctx.closePath();
-      //         ctx.fillStyle = color;
-      //         ctx.fill();
-      //     }
+          const color = `rgb(${r}, ${g}, ${b})`;
+          // 绘制外圆弧
+          ctx.beginPath();
+          ctx.arc(centerX, centerY, outerRadius, startAngle, endAngle);
+          ctx.arc(centerX, centerY, innerRadius, endAngle, startAngle, true); // 内圆弧（逆时针）
+          ctx.closePath();
+          ctx.fillStyle = color;
+          ctx.fill();
+        }
+      }
 
-      // }
+      function initColorSelectorBackground() {
+        if (!colorSelector.getContext) return;
+        const ctx = colorSelector.getContext("2d");
 
-      // function initColorSelectorBackground() {
-      //     if (!colorSelector.getContext) return;
-      //     const ctx = colorSelector.getContext("2d");
+        // 填充灰色背景
+        ctx.fillStyle = "gray";
+        ctx.fillRect(0, 0, colorSelector.width, colorSelector.height);
 
-      //     // 填充灰色背景
-      //     ctx.fillStyle = 'gray';
-      //     ctx.fillRect(0, 0, colorSelector.width, colorSelector.height);
+        let r =
+          (colorSelector.width < colorSelector.height
+            ? colorSelector.width / 2
+            : colorSelector.height / 2) - 8;
 
-      //     let r = (colorSelector.width < colorSelector.height ? colorSelector.width / 2 : colorSelector.height / 2) - 8;
-
-      //     drawAngularGradientRing(ctx, r + 8, r + 8, r - 20, r); // 圆心(200,200)，内半径50，外半径100
-      // }
+        drawAngularGradientRing(ctx, r + 8, r + 8, r - 20, r); // 圆心(200,200)，内半径50，外半径100
+      }
 
       function initPrintToolSize() {
         // 获取父容器的实际尺寸
@@ -259,8 +263,8 @@
 
       initCanvasSize();
       initCanvasBackground();
-      // initColorSelectorSize();
-      // initColorSelectorBackground();
+      initColorSelectorSize();
+      initColorSelectorBackground();
       initPrintToolSize();
       initPrintToolBackground();
 
