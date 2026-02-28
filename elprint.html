@@ -22,12 +22,15 @@
         background-color: darkgrey;
       }
 
-      #canvas {
+      #drawing-board {
         flex: 1;
+        touch-action: none;
       }
 
       #toolbar {
-        width: 15%;
+        width: 200px;
+        min-width: 200px;
+        height: 100%;
 
         #color-selector {
           width: 100%;
@@ -37,7 +40,6 @@
         #print-tool-selector {
           width: 100%;
           height: 60%;
-          /* border: 20px solid conic-gradient(from 0deg, rgb(255,0,0), rgb(255,255,0), rgb(0,255,0), rgb(0,255,255), rgb(0,0,255), rgb(255,0,255), rgb(255,0,0)); */
         }
       }
     </style>
@@ -45,7 +47,9 @@
 
   <body>
     <div class="ful-screen-container">
-      <canvas id="canvas"> 你的浏览器不支持 canvas，请升级你的浏览器。 </canvas>
+      <canvas id="drawing-board">
+        你的浏览器不支持 canvas，请升级你的浏览器。
+      </canvas>
 
       <div id="toolbar">
         <canvas id="color-selector">
@@ -57,84 +61,10 @@
         </canvas>
       </div>
     </div>
-
+    <script type="module" src="./drawingBoard/init.js"></script>
     <script type="text/javascript">
-      const canvas = document.getElementById("canvas");
       const colorSelector = document.getElementById("color-selector");
       const printToolSelector = document.getElementById("print-tool-selector");
-
-      function initCanvasSize() {
-        canvas.width = window.innerWidth * 0.85;
-        canvas.height = window.innerHeight;
-      }
-
-      function initCanvasBackground() {
-        if (!canvas.getContext) return;
-        const ctx = canvas.getContext("2d");
-        ctx.fillStyle = "white";
-
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-      }
-
-      let path = [];
-      let isPrinting = false;
-      let startPath = { x: 0, y: 0 };
-
-      canvas.addEventListener("mousemove", function (event) {
-        if (!isPrinting) return;
-        const x = event.clientX;
-        const y = event.clientY;
-        path.push({ x, y });
-      });
-
-      canvas.addEventListener("mousedown", function (event) {
-        isPrinting = true;
-        startPath = { x: event.clientX, y: event.clientY };
-        path = [];
-      });
-
-      canvas.addEventListener("mouseup", function (event) {
-        isPrinting = false;
-      });
-
-      canvas.addEventListener("touchstart", function (event) {
-        console.log("touchstart");
-        console.log(event);
-        console.log(event.touches[0].clientX, event.touches[0].clientY);
-        isPrinting = true;
-        startPath = {
-          x: event.touches[0].clientX,
-          y: event.touches[0].clientY,
-        };
-        path = [];
-      });
-
-      canvas.addEventListener("touchmove", function (event) {
-        console.log("touchmove");
-        console.log(event);
-        console.log(event.touches[0].force);
-        if (!isPrinting) return;
-        const x = event.touches[0].clientX;
-        const y = event.touches[0].clientY;
-        path.push({ x, y });
-      });
-
-      canvas.addEventListener("touchend", function (event) {
-        isPrinting = false;
-      });
-
-      function printPath() {
-        const ctx = canvas.getContext("2d");
-        ctx.beginPath();
-        ctx.moveTo(startPath.x, startPath.y);
-        if (path.length > 0) {
-          ctx.moveTo(startPath.x, startPath.y);
-          for (let i = 0; i < path.length; i++) {
-            ctx.lineTo(path[i].x, path[i].y);
-          }
-        }
-        ctx.stroke();
-      }
 
       function initColorSelectorSize() {
         // 获取父容器的实际尺寸
@@ -203,11 +133,9 @@
       }
 
       function initPrintToolSize() {
-        // 获取父容器的实际尺寸
         const parentWidth = printToolSelector.parentElement.clientWidth;
         const parentHeight = printToolSelector.parentElement.clientHeight;
 
-        // 设置 canvas 的实际分辨率
         printToolSelector.width = parentWidth;
         printToolSelector.height = parentHeight * 0.6;
       }
@@ -216,14 +144,11 @@
         if (!printToolSelector.getContext) return;
         const ctx = printToolSelector.getContext("2d");
 
-        // 填充灰色背景
         ctx.fillStyle = "gray";
         ctx.fillRect(0, 0, printToolSelector.width, printToolSelector.height);
 
-        // 设置三角形的颜色
         ctx.fillStyle = "green"; // 三角形颜色为红色
 
-        // 绘制第一个三角形
         ctx.beginPath();
         ctx.moveTo(50, 50); // 起始点
         ctx.lineTo(50, 100); // 第二个点
@@ -232,14 +157,10 @@
         ctx.fill(); // 填充三角形
       }
 
-      initCanvasSize();
-      initCanvasBackground();
       initColorSelectorSize();
       initColorSelectorBackground();
       initPrintToolSize();
       initPrintToolBackground();
-
-      setInterval(printPath, 5);
     </script>
   </body>
 </html>
