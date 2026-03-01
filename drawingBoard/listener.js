@@ -1,7 +1,9 @@
+import { getCanvasCoordinates } from "./utils.js";
 export function attachListeners(canvas, printPath) {
   let path = [];
   let isPrinting = false;
   let startPath = { x: 0, y: 0 };
+  // bounding rect will be recalculated on each event to handle layout changes
 
   function printPath() {
     const ctx = canvas.getContext("2d");
@@ -22,21 +24,30 @@ export function attachListeners(canvas, printPath) {
 
   canvas.addEventListener("mousemove", function (event) {
     if (!isPrinting) return;
-    const x = event.clientX;
-    const y = event.clientY;
+    const { x, y } = getCanvasCoordinates(canvas, event);
     path.push({ x, y });
   });
 
   canvas.addEventListener("mousedown", function (event) {
     isPrinting = true;
-    startPath = { x: event.clientX, y: event.clientY };
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    startPath = {
+      x: (event.clientX - rect.left) * scaleX,
+      y: (event.clientY - rect.top) * scaleY,
+    };
     path = [];
   });
 
+  // duplicate mousemove handler used for drawing; ensure coordinates are corrected
   canvas.addEventListener("mousemove", function (event) {
     if (!isPrinting) return;
-    const x = event.clientX;
-    const y = event.clientY;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const x = (event.clientX - rect.left) * scaleX;
+    const y = (event.clientY - rect.top) * scaleY;
     path.push({ x, y });
     printPath();
   });
@@ -49,9 +60,12 @@ export function attachListeners(canvas, printPath) {
     "touchstart",
     function (event) {
       isPrinting = true;
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
       startPath = {
-        x: event.touches[0].clientX,
-        y: event.touches[0].clientY,
+        x: (event.touches[0].clientX - rect.left) * scaleX,
+        y: (event.touches[0].clientY - rect.top) * scaleY,
       };
       path = [];
     },
@@ -65,8 +79,11 @@ export function attachListeners(canvas, printPath) {
       // console.log(event);
       // console.log(event.touches[0].force);
       if (!isPrinting) return;
-      const x = event.touches[0].clientX;
-      const y = event.touches[0].clientY;
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const x = (event.touches[0].clientX - rect.left) * scaleX;
+      const y = (event.touches[0].clientY - rect.top) * scaleY;
       const force = event.touches[0].force;
       path.push({ x, y, force });
       printPath();

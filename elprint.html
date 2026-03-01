@@ -15,11 +15,20 @@
       }
 
       .ful-screen-container {
-        display: flex;
+        display: grid;
         height: 100%;
         width: 100%;
         margin: 0;
         background-color: darkgrey;
+      }
+
+      #operation-bar {
+        width: 100%;
+        height: 40px;
+        background-color: lightgray;
+        display: flex;
+        align-items: center;
+        padding-left: 10px;
       }
 
       #drawing-board {
@@ -27,7 +36,7 @@
         touch-action: none;
       }
 
-      #toolbar {
+      #print-toolbar {
         width: 200px;
         min-width: 200px;
         height: 100%;
@@ -47,11 +56,15 @@
 
   <body>
     <div class="ful-screen-container">
+      <header id="operation-bar">
+        <button id="save-btn">保存</button>
+      </header>
+
       <canvas id="drawing-board">
         你的浏览器不支持 canvas，请升级你的浏览器。
       </canvas>
 
-      <div id="toolbar">
+      <div id="print-toolbar">
         <canvas id="color-selector">
           你的浏览器不支持 canvas，请升级你的浏览器。
         </canvas>
@@ -62,6 +75,7 @@
       </div>
     </div>
     <script type="module" src="./drawingBoard/init.js"></script>
+    <script type="module" src="./operation/init.js"></script>
     <script type="text/javascript">
       const colorSelector = document.getElementById("color-selector");
       const printToolSelector = document.getElementById("print-tool-selector");
